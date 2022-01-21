@@ -1,79 +1,92 @@
 import React, {useState} from 'react';
 import * as S from './styles';
+import getWeather from '../../../domain/useCases/getWeather';
 
 export default function WeatherForm() {
-    const [state, setState] = useState({
-        temperature: undefined,
-        city: undefined,
-        country: undefined,
-        humidity: undefined,
-        description: undefined,
-        error: undefined,
-      })
-    
-    const { REACT_APP_OPENWEATHERMAP_API_KEY } = process.env;
 
-    const getWeather = async (e) => {
-        e.preventDefault();
-        const city = e.target.elements.city.value || "Madrid";
-        const country = e.target.elements.country.value || "es";
-        const api_call = await fetch(
-          `http://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${REACT_APP_OPENWEATHERMAP_API_KEY}&units=metric`
-        );
-        const data = await api_call.json();
-        if (city && country) {
-          setState({
-            temperature: data.main.temp,
-            city: data.name,
-            country: data.sys.country,
-            humidity: data.main.humidity,
-            description: data.weather[0].description,
-            error: "",
-          });
-        } else {
-          fsetState({
-            temperature: undefined,
-            city: undefined,
-            country: undefined,
-            humidity: undefined,
-            description: undefined,
-            error: "Please enter the values.",
-          });
-        }
-      };
+  const getPreviousValues = ({field}) => {
+    if(localStorage.getItem('weatherInfo') === null){
+      return null;
+    }
+
+    const localInfo = JSON.parse(localStorage.getItem('weatherInfo'));
+    return localInfo[field];
+  }
+
+
+  const [temperature, setTemperature] = useState(getPreviousValues({field: 'temperature'})? getPreviousValues({field: 'temperature'}) : "");
+  const [city, setCity] = useState(getPreviousValues({field: 'city'})? getPreviousValues({field: 'city'}) : "");
+  const [country, setCountry] = useState(getPreviousValues({field: 'country'})? getPreviousValues({field: 'country'}) : "");
+  const [humidity, setHumidity] = useState(getPreviousValues({field: 'humidity'})? getPreviousValues({field: 'humidity'}) : "");
+  const [description, setDescription] = useState(getPreviousValues({field: 'description'})? getPreviousValues({field: 'description'}) : "");
+  const [error, setError] = useState("");
+
+  const resetStates = () => {
+    setTemperature("");
+    setCity("");
+    setCountry("");
+    setHumidity("");
+    setDescription("");
+  }
+
+  const handleSubmitForm = async(e) => {
+    e.preventDefault();
+    setError("");
+    const cityField = e.target.elements.city.value || "Madrid";
+    const countryField = e.target.elements.country.value || "es";
+    try {
+      const response = await getWeather({city: cityField, country: countryField});
+      const { temperature, city, country, humidity, description} = response;
+      setTemperature(temperature);
+      setCity(city);
+      setCountry(country);
+      setHumidity(humidity);
+      setDescription(description);
+      localStorage.setItem('weatherInfo', 
+        JSON.stringify({temperature,
+        city,
+        country,
+        humidity,
+        description})
+      )
+    } catch (error) {
+      resetStates();
+      setError(error.message);
+    }
+  };
 
   const weatherFieldsConfig = [
     {
       id: 'location',
       key: 'Location',
-      value: `${state.city} , ${state.country}`,
-      valueCondition: state.city && state.country
+      value: `${city} , ${country}`,
+      valueCondition: city !== "" && country !== ""
     },
     {
       id: 'temperature',
       key: 'Temperature',
-      value: state.temperature,
-      valueCondition: state.temperature
+      value: temperature,
+      valueCondition: temperature !== "",
     },
     {
       id: 'humidity',
       key: 'Humidity',
-      value: state.humidity,
-      valueCondition: state.humidity
+      value: humidity,
+      valueCondition: humidity !== ""
     },
     {
       id: 'conditions',
       key: 'Conditions',
-      value: state.description,
-      valueCondition: state.description,
+      value: description,
+      valueCondition: description !== "",
     }
-  ]
+  ];
     
   return (
     <S.FormContainer>
-        <form onSubmit={getWeather}>
-            <S.Input type="text" name="city" placeholder="Madrid" />
-            <S.Input type="text" name="country" placeholder="es" />
+        <form onSubmit={handleSubmitForm}>
+            <S.Input type="text" name="city" placeholder="Madrid" defaultValue={getPreviousValues({field: 'city'})} />
+            <S.Input type="text" name="country" placeholder="es" defaultValue={getPreviousValues({field: 'country'})}/>
             <S.StyledButton>Get Weather</S.StyledButton>
         </form>
         <S.WeatherInfo>
@@ -89,8 +102,8 @@ export default function WeatherForm() {
               )
             ))
           }
-            {state.error && (
-                <S.WeatherError>{state.error}</S.WeatherError>
+            {error !== "" && (
+                <S.WeatherError>{error}</S.WeatherError>
             )}
         </S.WeatherInfo>
   </S.FormContainer>
