@@ -5,7 +5,7 @@ import getWeather from "../../../domain/useCases/getWeather";
 export default function WeatherForm() {
   const getPreviousValues = ({ field }) => {
     if (localStorage.getItem("weatherInfo") === null) {
-      return null;
+      return "";
     }
 
     const localInfo = JSON.parse(localStorage.getItem("weatherInfo"));
@@ -14,28 +14,16 @@ export default function WeatherForm() {
 
   const [temperature, setTemperature] = useState(
     getPreviousValues({ field: "temperature" })
-      ? getPreviousValues({ field: "temperature" })
-      : ""
   );
-  const [city, setCity] = useState(
-    getPreviousValues({ field: "city" })
-      ? getPreviousValues({ field: "city" })
-      : ""
-  );
+  const [city, setCity] = useState(getPreviousValues({ field: "city" }));
   const [country, setCountry] = useState(
     getPreviousValues({ field: "country" })
-      ? getPreviousValues({ field: "country" })
-      : ""
   );
   const [humidity, setHumidity] = useState(
     getPreviousValues({ field: "humidity" })
-      ? getPreviousValues({ field: "humidity" })
-      : ""
   );
   const [description, setDescription] = useState(
     getPreviousValues({ field: "description" })
-      ? getPreviousValues({ field: "description" })
-      : ""
   );
   const [error, setError] = useState("");
 
@@ -129,11 +117,13 @@ export default function WeatherForm() {
             valueCondition && (
               <S.WeatherKey key={id}>
                 {key} {""}
-                <S.WeatherValue>{value}</S.WeatherValue>
+                <S.WeatherValue data-testid={key}>{value}</S.WeatherValue>
               </S.WeatherKey>
             )
         )}
-        {error !== "" && <S.WeatherError>{error}</S.WeatherError>}
+        {error !== "" && (
+          <S.WeatherError data-testid="error">{error}</S.WeatherError>
+        )}
       </S.WeatherInfo>
     </S.FormContainer>
   );
