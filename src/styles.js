@@ -1,9 +1,9 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const MainContainer = styled.div`
   height: 90vh;
   background: #fff;
-  box-shadow: 0px 13px 40px -13px rgba(0,0,0,0.75);
+  box-shadow: 0px 13px 40px -13px rgba(0, 0, 0, 0.75);
   width: 80%;
   margin: 0 auto;
 `;

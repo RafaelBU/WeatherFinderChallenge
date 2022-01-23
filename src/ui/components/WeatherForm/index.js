@@ -1,24 +1,42 @@
-import React, {useState} from 'react';
-import * as S from './styles';
-import getWeather from '../../../domain/useCases/getWeather';
+import React, { useState } from "react";
+import * as S from "./styles";
+import getWeather from "../../../domain/useCases/getWeather";
 
 export default function WeatherForm() {
-
-  const getPreviousValues = ({field}) => {
-    if(localStorage.getItem('weatherInfo') === null){
+  const getPreviousValues = ({ field }) => {
+    if (localStorage.getItem("weatherInfo") === null) {
       return null;
     }
 
-    const localInfo = JSON.parse(localStorage.getItem('weatherInfo'));
+    const localInfo = JSON.parse(localStorage.getItem("weatherInfo"));
     return localInfo[field];
-  }
+  };
 
-
-  const [temperature, setTemperature] = useState(getPreviousValues({field: 'temperature'})? getPreviousValues({field: 'temperature'}) : "");
-  const [city, setCity] = useState(getPreviousValues({field: 'city'})? getPreviousValues({field: 'city'}) : "");
-  const [country, setCountry] = useState(getPreviousValues({field: 'country'})? getPreviousValues({field: 'country'}) : "");
-  const [humidity, setHumidity] = useState(getPreviousValues({field: 'humidity'})? getPreviousValues({field: 'humidity'}) : "");
-  const [description, setDescription] = useState(getPreviousValues({field: 'description'})? getPreviousValues({field: 'description'}) : "");
+  const [temperature, setTemperature] = useState(
+    getPreviousValues({ field: "temperature" })
+      ? getPreviousValues({ field: "temperature" })
+      : ""
+  );
+  const [city, setCity] = useState(
+    getPreviousValues({ field: "city" })
+      ? getPreviousValues({ field: "city" })
+      : ""
+  );
+  const [country, setCountry] = useState(
+    getPreviousValues({ field: "country" })
+      ? getPreviousValues({ field: "country" })
+      : ""
+  );
+  const [humidity, setHumidity] = useState(
+    getPreviousValues({ field: "humidity" })
+      ? getPreviousValues({ field: "humidity" })
+      : ""
+  );
+  const [description, setDescription] = useState(
+    getPreviousValues({ field: "description" })
+      ? getPreviousValues({ field: "description" })
+      : ""
+  );
   const [error, setError] = useState("");
 
   const resetStates = () => {
@@ -27,28 +45,34 @@ export default function WeatherForm() {
     setCountry("");
     setHumidity("");
     setDescription("");
-  }
+  };
 
-  const handleSubmitForm = async(e) => {
+  const handleSubmitForm = async (e) => {
     e.preventDefault();
     setError("");
     const cityField = e.target.elements.city.value || "Madrid";
     const countryField = e.target.elements.country.value || "es";
     try {
-      const response = await getWeather({city: cityField, country: countryField});
-      const { temperature, city, country, humidity, description} = response;
+      const response = await getWeather({
+        city: cityField,
+        country: countryField,
+      });
+      const { temperature, city, country, humidity, description } = response;
       setTemperature(temperature);
       setCity(city);
       setCountry(country);
       setHumidity(humidity);
       setDescription(description);
-      localStorage.setItem('weatherInfo', 
-        JSON.stringify({temperature,
-        city,
-        country,
-        humidity,
-        description})
-      )
+      localStorage.setItem(
+        "weatherInfo",
+        JSON.stringify({
+          temperature,
+          city,
+          country,
+          humidity,
+          description,
+        })
+      );
     } catch (error) {
       resetStates();
       setError(error.message);
@@ -57,55 +81,60 @@ export default function WeatherForm() {
 
   const weatherFieldsConfig = [
     {
-      id: 'location',
-      key: 'Location',
+      id: "location",
+      key: "Location",
       value: `${city} , ${country}`,
-      valueCondition: city !== "" && country !== ""
+      valueCondition: city !== "" && country !== "",
     },
     {
-      id: 'temperature',
-      key: 'Temperature',
+      id: "temperature",
+      key: "Temperature",
       value: temperature,
       valueCondition: temperature !== "",
     },
     {
-      id: 'humidity',
-      key: 'Humidity',
+      id: "humidity",
+      key: "Humidity",
       value: humidity,
-      valueCondition: humidity !== ""
+      valueCondition: humidity !== "",
     },
     {
-      id: 'conditions',
-      key: 'Conditions',
+      id: "conditions",
+      key: "Conditions",
       value: description,
       valueCondition: description !== "",
-    }
+    },
   ];
-    
+
   return (
     <S.FormContainer>
-        <form onSubmit={handleSubmitForm}>
-            <S.Input type="text" name="city" placeholder="Madrid" defaultValue={getPreviousValues({field: 'city'})} />
-            <S.Input type="text" name="country" placeholder="es" defaultValue={getPreviousValues({field: 'country'})}/>
-            <S.StyledButton>Get Weather</S.StyledButton>
-        </form>
-        <S.WeatherInfo>
-          {
-            weatherFieldsConfig.map(({id, key, value, valueCondition}) => (
-              valueCondition && (
-                <S.WeatherKey key={id}>
-                  {key} {""}
-                  <S.WeatherValue>
-                      {value}
-                  </S.WeatherValue>
+      <form onSubmit={handleSubmitForm}>
+        <S.Input
+          type="text"
+          name="city"
+          placeholder="Madrid"
+          defaultValue={getPreviousValues({ field: "city" })}
+        />
+        <S.Input
+          type="text"
+          name="country"
+          placeholder="es"
+          defaultValue={getPreviousValues({ field: "country" })}
+        />
+        <S.StyledButton>Get Weather</S.StyledButton>
+      </form>
+      <S.WeatherInfo>
+        {weatherFieldsConfig.map(
+          ({ id, key, value, valueCondition }) =>
+            valueCondition && (
+              <S.WeatherKey key={id}>
+                {key} {""}
+                <S.WeatherValue>{value}</S.WeatherValue>
               </S.WeatherKey>
-              )
-            ))
-          }
-            {error !== "" && (
-                <S.WeatherError>{error}</S.WeatherError>
-            )}
-        </S.WeatherInfo>
-  </S.FormContainer>
-  )
+            )
+        )}
+        {error !== "" && <S.WeatherError>{error}</S.WeatherError>}
+      </S.WeatherInfo>
+    </S.FormContainer>
+  );
 }

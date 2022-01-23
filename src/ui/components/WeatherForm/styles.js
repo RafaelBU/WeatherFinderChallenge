@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled from "styled-components";
 
 export const FormContainer = styled.div`
   background-color: #2c3e50;
@@ -6,7 +6,7 @@ export const FormContainer = styled.div`
   padding-top: 100px;
   padding-left: 50px;
   width: 61%;
-`
+`;
 
 export const Input = styled.input`
   background-color: transparent;
@@ -26,7 +26,7 @@ export const Input = styled.input`
     -webkit-box-shadow: 0 0 0 30px #2c3e50 inset;
     -webkit-text-fill-color: #fff !important;
   }
-`
+`;
 
 export const StyledButton = styled.button`
   border: 0;
@@ -44,33 +44,33 @@ export const StyledButton = styled.button`
   &:active {
     outline: none;
   }
-`
+`;
 
 export const WeatherInfo = styled.div`
   width: 60%;
   font-size: 20px;
   font-weight: 200;
   letter-spacing: 2px;
-`
+`;
 
 export const WeatherKey = styled.p`
   color: #f16051;
-  border-bottom: solid 2px rgba(255,255,255,0.06);
+  border-bottom: solid 2px rgba(255, 255, 255, 0.06);
   padding: 20px 0 20px 0;
   font-weight: 400;
 
   &:last-child {
     border: 0;
   }
-`
+`;
 export const WeatherValue = styled.span`
- color: #fff;
- font-weight: 200;
-`
+  color: #fff;
+  font-weight: 200;
+`;
 
 export const WeatherError = styled.p`
- color: #f16051;
- font-size: 20px;
- letter-spacing: 1px;
- font-weight: 200;
-`
+  color: #f16051;
+  font-size: 20px;
+  letter-spacing: 1px;
+  font-weight: 200;
+`;
